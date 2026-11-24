@@ -30,7 +30,8 @@ base="$releases/download/$tag"
 mkdir -p bucket
 # The engine archive has one top folder, flisk-cli, which lands next to
 # flisk.exe. That is where the binary looks for it.
-jq -n \
+# Render first so a jq failure cannot truncate the existing manifest.
+manifest="$(jq -n \
   --arg version "$version" \
   --arg exe_url "$base/flisk-windows-amd64.exe#/flisk.exe" \
   --arg engine_url "$base/flisk-cli-engine.tar.gz" \
@@ -48,6 +49,7 @@ jq -n \
       }
     },
     bin: "flisk.exe"
-  }' >bucket/flisk.json
+  }')"
+printf '%s\n' "$manifest" >bucket/flisk.json
 
 echo "$version"
